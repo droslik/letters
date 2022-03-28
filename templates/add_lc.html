@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Create new LC
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+
+  <h1>New LC creating</h1>
+
+    <form method="post" class="form-letter">
+        <table>
+            <tbody>
+                <tr><td><label>LC Number:</label></td><td><input type="text" name="LC Number" id="LC Number" class="form-control" placeholder="Input LC Number" value="" required></td></tr>
+                <tr><td><label>Applicant's Name:</label></td> <td><input type="text" name="Applicant's Name" id="Applicant's Name" class="form-control" placeholder="Input Applicant's Name" value="" required></td></tr>
+                <tr><td><label>Beneficiary's Name:</label></td><td><input type="text" name="Beneficiary's Name" id="Beneficiary's Name" class="form-control" placeholder="Input Beneficiary's Name" value="" required></td></tr>
+                <tr><td><label>Goods:</label> </td><td><input type="text" name="Goods" id="Goods" class="form-control" placeholder="Input Goods Description" value="" required></td></tr>
+                <tr><td><label>Currency:</label> </td><td><input type="text" name="Currency" id="Currency" class="form-control" placeholder="Input Currency" value="" required></td></tr>
+                <tr><td><label>Amount:</label> </td><td><input type="text" name="Amount" id="Amount" class="form-control" placeholder="Input Amount" value="" required></td></tr>
+        <!--<p><label>Date of Issue: </label> <input type="text" name="Date of Issue" id="Date of Issue" class="form-control" placeholder="dd/mm/yyyy" value=lc_number[9:15] required>-->
+                <tr><td><label>Expiry Date: </label> </td><td><input type="text" name="Expiry Date" id="Expiry Date" class="form-control" placeholder="dd/mm/yyyy" value="" align="center"></td></tr>
+                <p></p>
+                <tr><td></td><td><input type="submit" class="btn btn-success" value="Create"></td></tr>
+            </tbody>
+        </table>
+    </form>
+   </div>
+
+
+{% endblock %}

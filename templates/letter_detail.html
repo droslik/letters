@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %} Details of LC {{ letter.lc_number }} {% endblock %}
+
+{% block body %}
+Details of LC №: {{ letter.lc_number }}
+<p></p>
+<div>LC No. {{ letter.lc_number }} was issued on {{ letter.date_of_issue }} by the order of "{{ letter.applicant_name }}" in favour of
+    "{{ letter.beneficiary_name }}" for the amount of {{ letter.currency }} {{ letter.amount }} for delivery of {{ letter.goods }}
+
+{% endblock %}

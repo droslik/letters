@@ -1,0 +1,18 @@
+{{ letter_of_credit.lc_number }}
+
+
+<!--  <h1>{{ letter_of_credit.lc_number }}</h1>
+    <p>{{ letter_of_credit.applicant_name }}</p>
+    <p>{{ letter_of_credit.beneficiary_name }}</p>
+    <p>{{ letter_of_credit.currency }}</p>
+    <p>{{ letter_of_credit.amount }}</p>
+    <p>{{ letter_of_credit.date_of_issue }}</p>
+    <p>{{ letter_of_credit.expiry_date }}</p>
+-->
+
+<link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+
+
+  <!-- <a href="/posts/{{ article.id }}/del" class="btn btn-danger">Удалить</a>
+   <a href="/posts/{{ article.id }}/update" class="btn btn-success">Обновить</a>
+-->

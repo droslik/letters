@@ -1,0 +1,9 @@
+body {
+    background: white;
+    }
+.navbar-expand-lg {
+    border-style: solid;
+    background: light-grey;
+    margin: 40 px;
+    padding: 40 px 40 px 50 px 50 px;
+    height: 180 px;
