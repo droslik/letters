@@ -1,17 +1,28 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_session import Session
 from datetime import datetime, date
 
-app = Flask(__name__)  # создаем объект и передаем название файла app.py Это основной файл.
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lc.db'  # обращаемся к словарю config по ключу SQLAlchemy... и устанавливаем значение БД, с которой будем работать
+
+app = Flask(__name__)  # create object by saying to Flask to turn the main file (letter.py) into app This is the main file
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lc.db'  # approach to the dict 'config' by key SQLAlchemy... and set value of DB which ara intending to work with
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SESSION_PERMANENT'] = False
+#app.config['SESSION_TYPE'] = 'filesystem'
+#Session(app)
 app.config['SECRET_KEY'] = 'adsgsdfhdsglhjdsaie46gjklsdjg'
-db = SQLAlchemy(app)
+db = SQLAlchemy(app)            #create instance db
+migrate = Migrate(app, db)      #create instance of migration mechanics
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-class Letter(db.Model):  # наследуем от db.Model
+#create table letter in db
+class Letter(db.Model):  # inherit from db.Model
     id = db.Column(db.Integer, primary_key=True)
-    lc_number = db.Column(db.String(15), nullable=False)
+    lc_number = db.Column(db.String(15), nullable=False, unique=True)
     applicant_name = db.Column(db.String(100), nullable=False)
     beneficiary_name = db.Column(db.String(100), nullable=False)
     goods = db.Column(db.String(100), nullable=False)
@@ -21,52 +32,63 @@ class Letter(db.Model):  # наследуем от db.Model
     expiry_date = db.Column(db.String(10), nullable=False)
 
     def __repr__(self):
-        return '<Letter %r>' % self.id  # Когда будем выбирать какую-то запись, то будет выдаваться сам объект и id
+        return '<Letter %r>' % self.id  # the way of representation of the object (just for developers)
 
-class Applicant(db.Model):  # наследуем от db.Model
+
+#create table applicant in db
+class Applicant(db.Model):  # inherit from db.Model
     id = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String(50), nullable=True)
-    region = db.Column(db.String(50), nullable=False)
-    district = db.Column(db.String(50), nullable=False)
+    applicant_name = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(50), nullable=False)
+    region = db.Column(db.String(50), nullable=True)
+    district = db.Column(db.String(50), nullable=True)
     zip_code = db.Column(db.String(10), nullable=False)
     city = db.Column(db.String(100), nullable=False)
-    street = db.Column(db.String(100), nullable=False)
+    street = db.Column(db.String(100), nullable=True)
     building = db.Column(db.String(20), nullable=False)
-    room = db.Column(db.String(20), nullable=False)
-    amount = db.Column(db.Integer, nullable=False)
-    date_of_issue = db.Column(db.String(10), nullable=False)
-    expiry_date = db.Column(db.String(10), nullable=False)
+    room = db.Column(db.String(20), nullable=True)
 
     #applicant_id = db.Column(db.)
+
     def __repr__(self):
-        return '<Applicant %r>' % self.id  # Когда будем выбирать какую-то запись, то будет выдаваться сам объект и id
+        return '<Applicant %r>' % self.id
 
-
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    email = db.Column(db.String(120), unique = True)
-    psw = db.Column(db.String(100), nullable = True)
-    date = db.Column(db.DateTime, default = datetime.utcnow)
-
-class Profiles(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-    old = db.Column(db.String(100), nullable=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#
+# class Users(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     email = db.Column(db.String(120), unique = True)
+#     psw = db.Column(db.String(100), nullable = True)
+#     date = db.Column(db.DateTime, default = datetime.utcnow)
+#
+# class Profiles(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(50), unique=True)
+#     old = db.Column(db.String(100), nullable=True)
+#
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 @app.route('/home')
 def index():
     return render_template('index.html')
 
 
-@app.route('/letters')  # ф-ция отслеживает url-адрес страницы posts.
+@app.route('/letters')  #  url for page letters
 def letter():
     letters_of_credit = Letter.query.order_by(Letter.id).all()
-    return render_template('letters.html', letters_of_credit=letters_of_credit)  # вторым параметром передаем список LC в шаблон
+    return render_template('letters.html', letters_of_credit=letters_of_credit)  # letters_of_credit - the second parameter is passed to the template
 
-@app.route('/letter_detail/<int:id>')
+@app.route('/letter_detail/<int:id>', methods = ["POST", "GET"])
 def letter_detail(id):
+    if request.method == "POST":    # for choosing LC within select tag of html template
+        if request.form.get('LC Number') == 'LC Number':
+            return render_template('letters.html')
+        else:
+            letters = Letter.query.all()
+            for letter in letters:
+                if letter.lc_number == request.form.get('LC Number'):
+                    return render_template('letter_detail.html', letter=letter)
+
+
     letter = Letter.query.get(id)
     if letter is not None:
         return render_template('letter_detail.html', letter = letter)
@@ -74,47 +96,56 @@ def letter_detail(id):
         return render_template('letters.html')
 
 
+
+
 @app.route('/letters/<path:applicant_name>')     #route for applicant's details (dinamic URL).
 def applicant_detail(applicant_name):
-    letters_of_credit = Letter.query.filter(Letter.applicant_name == applicant_name)     #создаем объект
-    if letters_of_credit is not None:     #if applicant is in BD, render template applicant
-        return render_template('applicant_detail.html', letters_of_credit = letters_of_credit, applicant_name = applicant_name)  #вторым параметром передаем список arcticles в шаблон
-    else:                       #если нету, то переход на страницу posts
+    letters_of_credit = Letter.query.filter(Letter.applicant_name == applicant_name)     #create an instance
+    applicants = Applicant.query.all()          #choose all records from table applicant with further passing it to template
+    if letters_of_credit is not None:           #if letter is in BD, render template applicant
+        return render_template('applicant_detail.html', letters_of_credit = letters_of_credit, applicant_name = applicant_name, applicants = applicants)  #вторым параметром передаем список arcticles в шаблон
+        #else:
+        #    return render_template('applicant_detail2.html', letters_of_credit=letters_of_credit, applicant_name=applicant_name)
+    else:                       #else redirection to letters page
         redirect('/letters')
-#
-#
-# @app.route('/posts/<int:id>/del')     #функция для отображения деталей поста (динамическое изменение адреса).
-# def post_delete(id):
-#     article = Article.query.get_or_404(id)    #создаем объект - находим запись в БД
-#
-#     try:
-#         db.session.delete(article)     #удаляем из БД
-#         db.session.commit()             #делаем commit в БД
-#         return redirect('/posts')       #после удаления происходит перенаправление на страницу с постами
-#     except:
-#         return "При удалении статьи произошла ошибка"
-#
-# @app.route('/posts/<int:id>/update', methods = ['POST','GET'])     #ф-ция отслеживает url-адрес страницы для ввода информации.
-# def post_update(id):
-#     article = Article.query.get(id)         #находим объект, который изменяем
-#     if request.method == "POST":            #если метод ПОСТ, то переменным присваиваем значения из полей формы, которые вводим на сайте.
-#         article.title = request.form['title']
-#         article.intro = request.form['intro']
-#         article.text = request.form['text']
-#
-#         try:
-#             db.session.commit()        #в данном случае только commit без add, так как мы только изменяем уже добавленную запись
-#             return redirect('/posts')  #в случае успешного сохранения пользователя перенаправляем на главную страницу
-#         except:
-#             return "При обновлении статьи произошла ошибка"
-#     else:
-#         return render_template('post_update.html', article = article)  #второй аргумент указывается для его передачи в шаблон
 
-@app.route('/add_lc', methods=['POST', 'GET'])  # ф-ция отслеживает url-адрес страницы для ввода информации.
+
+@app.route('/letters/<int:id>/delete')     #url for deleting of letter (dinamic).
+def letter_delete(id):
+    letter = Letter.query.get_or_404(id)    #create instance from db
+    try:
+        db.session.delete(letter)     #try to delete record from db
+        db.session.commit()             #make commit to db
+        return redirect('/letters')       #redirecting to letters page after deleting of an item
+    except:
+        return "Error has occurred while deleting LC"
+
+@app.route('/letters/<int:id>/edit', methods = ['POST','GET'])
+def letter_edit(id):
+    letter = Letter.query.get(id)         #find an instance(LC) to be edited
+    if request.method == "POST":            #if method POST, we pass values from the form on the web-site
+        letter.lc_number = request.form["LC Number"]  # create variables, which are get values from the HTML-form by the name in square brackets
+        letter.applicant_name = request.form["Applicant's Name"]
+        letter.beneficiary_name = request.form["Beneficiary's Name"]
+        letter.goods = request.form["Goods"]
+        letter.currency = request.form["Currency"]
+        letter.amount = request.form["Amount"]
+        letter.date_of_issue = str(letter.lc_number[-6:-4] + '/' + letter.lc_number[-4:-2] + '/' + '20' + letter.lc_number[-2:])  # request.form["Date of Issue"]
+        letter.expiry_date = request.form["Expiry Date"]
+
+        try:
+            db.session.commit()        #only commit is applied as the imet is alreade in db, we just make corrections to the existing LC
+            return redirect('/letters')  #redirecting to the letters page
+        except:
+            return "An error has occurred while editing the LC"
+    else:
+        return render_template('letter_update.html', letter = letter)  #letter is passed to the template
+
+@app.route('/add_lc', methods=['POST', 'GET'])  # url for LC adding
 def add_lc():
-    if request.method == "POST":  # если метод ПОСТ, то переменным присваиваем значения из полей формы, которые вводим на сайте.
+    if request.method == "POST":  # if POST method, then variables are got values from HTML-form after our input action
 
-        lc_number = request.form["LC Number"]   #создаем переменные, которые получают значения из формы HTML по именни в скобках
+        lc_number = request.form["LC Number"]   #create variables, which are get values from the HTML-form by the name in square brackets
         applicant_name = request.form["Applicant's Name"]
         beneficiary_name = request.form["Beneficiary's Name"]
         goods = request.form["Goods"]
@@ -127,10 +158,11 @@ def add_lc():
                                  goods = goods, currency = currency, amount = amount, date_of_issue = date_of_issue, expiry_date = expiry_date)  #создаем объект, в поля которого записываем информацию из соотвествующих полей
         #затем объект нужно сохранить в Базе данных
         try:
-            db.session.add(letter_of_credit)    #Добавляем в БД
-            db.session.commit()         #Сохраняем в БД
+            db.session.add(letter_of_credit)    #add to dbДобавляем в БД
+            db.session.commit()         #save changes to db
             flash('LC has been successfully created')
             return redirect('/letters')  #в случае успешного сохранения пользователя перенаправляем на главную страницу
+
         except:
             return render_template('creating_error.html')
     else:

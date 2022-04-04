@@ -10,26 +10,37 @@ td, th {
     width: 10%;
     border: solid;
     }
-{% endblock %}}
+{% endblock %}
 
 {% block title %} LC storage {% endblock %}
 
 {% block body %}
 <div> {{ get_flashed_messages() }}
 </div>
+<script>
+   function enableButton()
+{
+    var selectelem = document.getElementById('LC Number');
+    var btnelem = document.getElementById('view_lc');
+    btnelem.disabled = !selectelem.value;
+}
+  </script>
 
 <div class="container">
-    <button type="button" class="btn btn_access" onclick="applyFilters()">Применить фильтр</button>
+    {% for letter in letters_of_credit %}
+    <form id="lc_number" method="post" action="{{url_for('letter_detail', lc_number = letter.lc_number, id = letter.id)}}">
+    {% endfor %}
+    <input type="submit" form="lc_number" disabled value="View Selected LC" id="view_lc">
+    </form>
+
     <table>
         <thead>
             <tr>
                 <th>
-                    <select>
-                        <option>LC Number</option>
+                    <select form="lc_number" name="LC Number" id="LC Number" required onchange="enableButton()">
+                        <option disabled selected>LC Number</option>
                         {% for letter in letters_of_credit %}
-                        <option>
-                            {{ letter.lc_number }}
-                        </option>
+                        <option name="lc_number" value="{{letter.lc_number}}">{{ letter.lc_number }}</option>
                         {% endfor %}
                     </select>
                 </th>
@@ -46,8 +57,8 @@ td, th {
         <tbody>
         {% for letter in letters_of_credit %}
             <tr>
-                <td align="right"><a href="{{url_for('letter_detail', lc_number = letter.lc_number, id = letter.id, )}}">{{ letter.lc_number }}</a></td>
-                <td align="right"><a href="{{ url_for('applicant_detail', applicant_name = letter.applicant_name )}}">{{ letter.applicant_name }}</a></td>
+                <td align="right"><a href="{{url_for('letter_detail', lc_number = letter.lc_number, id = letter.id )}}">{{ letter.lc_number }}</a></td>
+                <td align="right"><a href="{{url_for('applicant_detail', applicant_name = letter.applicant_name )}}">{{ letter.applicant_name }}</a></td>
                 <td align="right">{{ letter.beneficiary_name }}</td>
                 <td align="right">{{ letter.goods }}</td>
                 <td align="right">{{ letter.currency }}</td>
@@ -60,6 +71,6 @@ td, th {
     </table>
 
 
-</div>
+    </div>
 
 {% endblock %}

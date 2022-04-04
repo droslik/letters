@@ -3,16 +3,41 @@
 {% block title %} Details of LCs of {{ applicant_name }} {% endblock %}
 
 {% block body %}
+
+<script>
+   function enableButton()
+{
+    var selectlc = document.getElementById('LC Number');
+    var btnlc = document.getElementById('view_lc');
+    btnlc.disabled = !selectlc.value;
+}
+
+    document.addEventListener('DomContentLoaded', function(){
+    var applicantdetail = document.getElementById("applicantdetail");
+    if (applicantdetail.innerHTML.length == 0){
+        applicantdetail.innerHTML = "Some sample content";
+        applicantdetail.style.display="inline";
+        }
+    }
+
+
+  </script>
+
 <div class="container">
+    {% for letter in letters_of_credit %}
+    <form id="lc_number" method="post" action="{{url_for('letter_detail', lc_number = letter.lc_number, id = letter.id)}}">
+    {% endfor %}
+    <input type="submit" form="lc_number" disabled value="View Selected LC" id="view_lc">
+    </form>
 
     <table>
         <thead>
             <tr>
                 <th>
-                    <select>
-                        <option>LC Number</option>
+                    <select form="lc_number" name="LC Number" id="LC Number" required onchange="enableButton()">
+                        <option disabled selected>Select LC Number</option>
                         {% for letter in letters_of_credit %}
-                        <option>
+                        <option name="lc_number" value="{{letter.lc_number}}">
                             {{ letter.lc_number }}
                         </option>
                         {% endfor %}
@@ -43,6 +68,39 @@
          {% endfor %}
         </tbody>
     </table>
-<p></p>
 
-{% endblock %}
+<div id="applicantdetail">
+    {% for applicant in applicants %}
+        {% if applicant %}
+            {% if applicant.applicant_name == applicant_name %}
+
+    <h2>Information about Company {{ applicant.applicant_name }}</h2>
+    <p>Company name: {{ applicant.applicant_name }}</p>
+    <p>Country of origin: {{ applicant.country}}</p>
+    {% if applicant.region %}
+        <p>Region: {{ applicant.region}}</p>
+    {% endif %}
+    {% if applicant.district %}
+        <p>District: {{ applicant.district }}</p>
+    {% endif %}
+    {% if applicant.zip_code %}
+        <p>Zip: {{ applicant.zip_code }}</p>
+    {% endif %}
+    {% if applicant.city %}
+        <p>City: {{ applicant.city }}</p>
+    {% endif %}
+        {% endif %}
+
+    {% endif %}
+    {% endfor %}
+</div>
+    <script>
+         document.addEventListener('DomContentLoaded', function(){
+    var applicantdetail = document.getElementById("applicantdetail");
+    if (applicantdetail.innerHTML.length == 0){
+        applicantdetail.innerHTML = "Some sample content";
+
+        }
+    }
+    </script>
+    {% endblock %}

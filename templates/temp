@@ -16,3 +16,28 @@
   <!-- <a href="/posts/{{ article.id }}/del" class="btn btn-danger">Удалить</a>
    <a href="/posts/{{ article.id }}/update" class="btn btn-success">Обновить</a>
 -->
+
+  {% for applicant in applicants %}
+        {% if applicant %}
+            {% if applicant.applicant_name == applicant_name %}
+
+    <h3>Information about Company {{ applicant.applicant_name }}</h3>
+    <p>Company name: {{ applicant.applicant_name }}</p>
+    <p>Country of origin: {{ applicant.country}}</p>
+    {% if applicant.region %}
+        <p>Region: {{ applicant.region}}</p>
+    {% endif %}
+    {% if applicant.district %}
+        <p>District: {{ applicant.district }}</p>
+    {% endif %}
+    {% if applicant.zip_code %}
+        <p>Zip: {{ applicant.zip_code }}</p>
+    {% endif %}
+    {% if applicant.city %}
+        <p>City: {{ applicant.city }}</p>
+    {% endif %}
+        {% endif %}
+    {% else %}
+Nothins was found
+    {% endif %}
+    {% endfor %}

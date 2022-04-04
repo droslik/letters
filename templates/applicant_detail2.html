@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} Details of LCs of {{ applicant_name }} {% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <select>
+                        <option>LC Number</option>
+                        {% for letter in letters_of_credit %}
+                        <option>
+                            {{ letter.lc_number }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </th>
+                <th>Applicant</th>
+                <th>Beneficiary</th>
+                <th>Goods</th>
+                <th>Currency</th>
+                <th>Amount</th>
+                <th>Date of Issue</th>
+                <th>Expiry Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for letter in letters_of_credit %}
+            <tr>
+                <td align="right"><a href="{{url_for('letter_detail', lc_number = letter.lc_number, id = letter.id, )}}">{{ letter.lc_number }}</a></td>
+                <td align="right"><a href="{{ url_for('applicant_detail', applicant_name = letter.applicant_name )}}">{{ letter.applicant_name }}</a></td>
+                <td align="right">{{ letter.beneficiary_name }}</td>
+                <td align="right">{{ letter.goods }}</td>
+                <td align="right">{{ letter.currency }}</td>
+                <td align="right">{{ letter.amount }}</td>
+                <td align="right">{{ letter.date_of_issue }}</td>
+                <td align="right">{{ letter.expiry_date }}</td>
+            </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>No records for {{ applicant_name }} in Data Base</h1>
+    {% endblock %}

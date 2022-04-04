@@ -7,5 +7,12 @@ Details of LC №: {{ letter.lc_number }}
 <p></p>
 <div>LC No. {{ letter.lc_number }} was issued on {{ letter.date_of_issue }} by the order of "{{ letter.applicant_name }}" in favour of
     "{{ letter.beneficiary_name }}" for the amount of {{ letter.currency }} {{ letter.amount }} for delivery of {{ letter.goods }}
+</div>
+
+<p><button id="delete"><a href="{{ url_for('letter_delete', lc_number = letter.lc_number, id = letter.id) }}" onclick="return confirm('Are you sure you want to delete LC {{ letter.lc_number }}?');" class="btn btn-danger">Delete LC</a></button>
+<button id="update"><a href="{{ url_for('letter_edit', lc_number = letter.lc_number, id = letter.id) }}" class="btn btn-success">Edit LC</a></button></p>
+
+
+
 
 {% endblock %}

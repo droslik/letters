@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+LC editing
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+  <h1>LC editing</h1>
+    <form method="post" class="form-letter">
+        <table>
+            <tbody>
+                <tr><td><label>LC Number:</label></td><td><input type="text" name="LC Number" id="LC Number" class="form-control" placeholder="Input LC Number" value="{{ letter.lc_number }}" required></td></tr>
+                <tr><td><label>Applicant's Name:</label></td> <td><input type="text" name="Applicant's Name" id="Applicant's Name" class="form-control" placeholder="Input Applicant's Name" value="{{ letter.applicant_name }}" required></td></tr>
+                <tr><td><label>Beneficiary's Name:</label></td><td><input type="text" name="Beneficiary's Name" id="Beneficiary's Name" class="form-control" placeholder="Input Beneficiary's Name" value="{{ letter.beneficiary_name }}" required></td></tr>
+                <tr><td><label>Goods:</label> </td><td><input type="text" name="Goods" id="Goods" class="form-control" placeholder="Input Goods Description" value="{{ letter.goods }}" required></td></tr>
+                <tr><td><label>Currency:</label> </td><td><input type="text" name="Currency" id="Currency" class="form-control" placeholder="Input Currency" value="{{ letter.currency }}" required></td></tr>
+                <tr><td><label>Amount:</label> </td><td><input type="text" name="Amount" id="Amount" class="form-control" placeholder="Input Amount" value="{{ letter.amount }}" required></td></tr>
+            <!--<p><label>Date of Issue: </label> <input type="text" name="Date of Issue" id="Date of Issue" class="form-control" placeholder="dd/mm/yyyy" value=lc_number[9:15] required>-->
+                <tr><td><label>Expiry Date: </label> </td><td><input type="text" name="Expiry Date" id="Expiry Date" class="form-control" placeholder="dd/mm/yyyy" value="{{ letter.expiry_date }}" align="center"></td></tr>
+                <p></p>
+                <tr><td></td><td><input type="submit" class="btn btn-success" onclick="return confirm('Are you sure to apply changes?');" value="Apply changes"></td></tr>
+            </tbody>
+        </table>
+    </form>
+   </div>
+
+{% endblock %}
